@@ -75,7 +75,7 @@ func (tr *mtlsTransporter) Dial(addr string, options ...DialOption) (conn net.Co
 		if opts.Chain == nil {
 			conn, err = net.DialTimeout("tcp", addr, timeout)
 		} else {
-			conn, err = opts.Chain.Dial(addr)
+			conn, err = opts.Chain.Dial(addr, SrcAddrChainOption(opts.SrcAddr), SrcAddrChainOption(opts.SrcAddr))
 		}
 		if err != nil {
 			return

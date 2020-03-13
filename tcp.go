@@ -17,7 +17,7 @@ func (tr *tcpTransporter) Dial(addr string, options ...DialOption) (net.Conn, er
 	}
 
 	if opts.Chain != nil {
-		return opts.Chain.Dial(addr)
+		return opts.Chain.Dial(addr, SrcAddrChainOption(opts.SrcAddr))
 	}
 
 	timeout := opts.Timeout
