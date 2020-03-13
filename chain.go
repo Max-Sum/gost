@@ -158,9 +158,15 @@ func (c *Chain) dialWithOptions(ctx context.Context, network, address string, op
 			}
 		default:
 		}
-		d := &net.Dialer{
+		d := net.Dialer{
 			Timeout: timeout,
-			// LocalAddr: laddr, // TODO: optional local address
+		}
+		if len(options.SrcAddr) > 0 {
+			laddr, err := net.ResolveTCPAddr("tcp", options.SrcAddr)
+			if err != nil {
+				return nil, err
+			}
+			d.LocalAddr = laddr
 		}
 		return d.DialContext(ctx, network, ipAddr)
 	}
@@ -328,6 +334,7 @@ type ChainOptions struct {
 	Timeout  time.Duration
 	Hosts    *Hosts
 	Resolver Resolver
+	SrcAddr  string
 }
 
 // ChainOption allows a common way to set chain options.
@@ -358,5 +365,12 @@ func HostsChainOption(hosts *Hosts) ChainOption {
 func ResolverChainOption(resolver Resolver) ChainOption {
 	return func(opts *ChainOptions) {
 		opts.Resolver = resolver
+	}
+}
+
+// SrcAddrChainOption specifies the source address used by Chain.Dial.
+func SrcAddrChainOption(addr string) ChainOption {
+	return func(opts *ChainOptions) {
+		opts.SrcAddr = addr
 	}
 }

@@ -225,6 +225,7 @@ func (h *relayHandler) Handle(conn net.Conn) {
 			network, raddr,
 			RetryChainOption(h.options.Retries),
 			TimeoutChainOption(h.options.Timeout),
+			SrcAddrChainOption(h.options.SrcAddr),
 		)
 		if err != nil {
 			log.Logf("[relay] %s -> %s : %s", conn.RemoteAddr(), raddr, err)

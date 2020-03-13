@@ -82,6 +82,7 @@ type Transporter interface {
 // DialOptions describes the options for Transporter.Dial.
 type DialOptions struct {
 	Timeout time.Duration
+	SrcAddr string
 	Chain   *Chain
 }
 
@@ -92,6 +93,13 @@ type DialOption func(opts *DialOptions)
 func TimeoutDialOption(timeout time.Duration) DialOption {
 	return func(opts *DialOptions) {
 		opts.Timeout = timeout
+	}
+}
+
+// SrcAddrDialOption specifies the source address used by Transporter.Dial
+func SrcAddrDialOption(addr string) DialOption {
+	return func(opts *DialOptions) {
+		opts.SrcAddr = addr
 	}
 }
 

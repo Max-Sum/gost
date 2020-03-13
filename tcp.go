@@ -16,14 +16,27 @@ func (tr *tcpTransporter) Dial(addr string, options ...DialOption) (net.Conn, er
 		option(opts)
 	}
 
+	if opts.Chain != nil {
+		return opts.Chain.Dial(addr)
+	}
+
 	timeout := opts.Timeout
 	if timeout <= 0 {
 		timeout = DialTimeout
 	}
-	if opts.Chain == nil {
-		return net.DialTimeout("tcp", addr, timeout)
+	var laddr *net.TCPAddr
+	if len(opts.SrcAddr) > 0 {
+		var err error
+		laddr, err = net.ResolveTCPAddr("tcp", opts.SrcAddr)
+		if err != nil {
+			return nil, err
+		}
 	}
-	return opts.Chain.Dial(addr)
+	dialer := net.Dialer{
+		Timeout:   timeout,
+		LocalAddr: laddr,
+	}
+	return dialer.Dial("tcp", addr)
 }
 
 func (tr *tcpTransporter) Handshake(conn net.Conn, options ...HandshakeOption) (net.Conn, error) {

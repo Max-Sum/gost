@@ -57,6 +57,7 @@ func (h *tcpRedirectHandler) Handle(c net.Conn) {
 		"tcp", dstAddr.String(),
 		RetryChainOption(h.options.Retries),
 		TimeoutChainOption(h.options.Timeout),
+		SrcAddrChainOption(h.options.SrcAddr),
 	)
 	if err != nil {
 		log.Logf("[red-tcp] %s -> %s : %s", srcAddr, dstAddr, err)
@@ -138,6 +139,7 @@ func (h *udpRedirectHandler) Handle(conn net.Conn) {
 		"udp", raddr.String(),
 		RetryChainOption(h.options.Retries),
 		TimeoutChainOption(h.options.Timeout),
+		SrcAddrChainOption(h.options.SrcAddr),
 	)
 	if err != nil {
 		log.Logf("[red-udp] %s - %s : %s", conn.RemoteAddr(), raddr, err)

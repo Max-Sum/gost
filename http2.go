@@ -428,6 +428,7 @@ func (h *http2Handler) roundTrip(w http.ResponseWriter, r *http.Request) {
 			TimeoutChainOption(h.options.Timeout),
 			HostsChainOption(h.options.Hosts),
 			ResolverChainOption(h.options.Resolver),
+			SrcAddrChainOption(h.options.SrcAddr),
 		)
 		if err == nil {
 			break

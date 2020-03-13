@@ -236,6 +236,7 @@ func parseChainNode(ns string) (nodes []gost.Node, err error) {
 
 	node.DialOptions = append(node.DialOptions,
 		gost.TimeoutDialOption(timeout),
+		gost.SrcAddrDialOption(node.Get("src")),
 	)
 
 	node.ConnectOptions = []gost.ConnectOption{
@@ -616,6 +617,7 @@ func (r *route) GenRouters() ([]router, error) {
 			gost.IPsHandlerOption(ips),
 			gost.TCPModeHandlerOption(node.GetBool("tcp")),
 			gost.IPRoutesHandlerOption(tunRoutes...),
+			gost.SrcAddrHandlerOption(node.Get("src")),
 		)
 
 		rt := router{

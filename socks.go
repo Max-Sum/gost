@@ -943,6 +943,7 @@ func (h *socks5Handler) handleConnect(conn net.Conn, req *gosocks5.Request) {
 			TimeoutChainOption(h.options.Timeout),
 			HostsChainOption(h.options.Hosts),
 			ResolverChainOption(h.options.Resolver),
+			SrcAddrChainOption(h.options.SrcAddr),
 		)
 		if err == nil {
 			break
@@ -1758,6 +1759,7 @@ func (h *socks4Handler) handleConnect(conn net.Conn, req *gosocks4.Request) {
 			TimeoutChainOption(h.options.Timeout),
 			HostsChainOption(h.options.Hosts),
 			ResolverChainOption(h.options.Resolver),
+			SrcAddrChainOption(h.options.SrcAddr),
 		)
 		if err == nil {
 			break

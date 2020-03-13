@@ -618,6 +618,7 @@ func (h *sshForwardHandler) directPortForwardChannel(channel ssh.Channel, raddr 
 		TimeoutChainOption(h.options.Timeout),
 		HostsChainOption(h.options.Hosts),
 		ResolverChainOption(h.options.Resolver),
+		SrcAddrChainOption(h.options.SrcAddr),
 	)
 	if err != nil {
 		log.Logf("[ssh-tcp] %s - %s : %s", h.options.Node.Addr, raddr, err)

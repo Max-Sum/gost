@@ -265,6 +265,7 @@ func (h *httpHandler) handleRequest(conn net.Conn, req *http.Request) {
 			TimeoutChainOption(h.options.Timeout),
 			HostsChainOption(h.options.Hosts),
 			ResolverChainOption(h.options.Resolver),
+			SrcAddrChainOption(h.options.SrcAddr),
 		)
 		if err == nil {
 			break
