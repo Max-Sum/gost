@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/go-log/log"
+	"github.com/libp2p/go-reuseport"
 )
 
 var (
@@ -160,7 +161,9 @@ func (c *Chain) dialWithOptions(ctx context.Context, network, address string, op
 		}
 		d := net.Dialer{
 			Timeout: timeout,
+			Control: reuseport.Control,
 		}
+		log.Logf("[chain] %s -> %s ", options.SrcAddr, ipAddr)
 		if len(options.SrcAddr) > 0 {
 			laddr, err := net.ResolveTCPAddr("tcp", options.SrcAddr)
 			if err != nil {
@@ -372,5 +375,6 @@ func ResolverChainOption(resolver Resolver) ChainOption {
 func SrcAddrChainOption(addr string) ChainOption {
 	return func(opts *ChainOptions) {
 		opts.SrcAddr = addr
+		log.Logf("[chain] set src addr: %s", opts.SrcAddr)
 	}
 }
