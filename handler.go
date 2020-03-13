@@ -42,7 +42,7 @@ type HandlerOptions struct {
 	IPs           []string
 	TCPMode       bool
 	IPRoutes      []IPRoute
-	SrcAddr       string
+	SrcAddr       []string
 }
 
 // HandlerOption allows a common way to set handler options.
@@ -213,7 +213,7 @@ func IPRoutesHandlerOption(routes ...IPRoute) HandlerOption {
 }
 
 // SrcAddrHandlerOption sets the source address.
-func SrcAddrHandlerOption(addr string) HandlerOption {
+func SrcAddrHandlerOption(addr []string) HandlerOption {
 	return func(opts *HandlerOptions) {
 		opts.SrcAddr = addr
 	}

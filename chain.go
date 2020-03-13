@@ -164,14 +164,22 @@ func (c *Chain) dialWithOptions(ctx context.Context, network, address string, op
 			Control: reuseport.Control,
 		}
 		log.Logf("[chain] %s -> %s ", options.SrcAddr, ipAddr)
-		if len(options.SrcAddr) > 0 {
-			laddr, err := net.ResolveTCPAddr("tcp", options.SrcAddr)
-			if err != nil {
-				return nil, err
-			}
-			d.LocalAddr = laddr
+		if len(options.SrcAddr) == 0 {
+			return d.DialContext(ctx, network, ipAddr)
 		}
-		return d.DialContext(ctx, network, ipAddr)
+		var conn net.Conn
+		var err error
+		for _, srcAddr := range options.SrcAddr {
+			d.LocalAddr, err = net.ResolveTCPAddr("tcp", srcAddr)
+			if err != nil {
+				continue
+			}
+			conn, err = d.DialContext(ctx, network, ipAddr)
+			if err == nil {
+				break
+			}
+		}
+		return conn, err
 	}
 
 	conn, err := route.getConn(ctx)
@@ -337,7 +345,7 @@ type ChainOptions struct {
 	Timeout  time.Duration
 	Hosts    *Hosts
 	Resolver Resolver
-	SrcAddr  string
+	SrcAddr  []string
 }
 
 // ChainOption allows a common way to set chain options.
@@ -372,9 +380,8 @@ func ResolverChainOption(resolver Resolver) ChainOption {
 }
 
 // SrcAddrChainOption specifies the source address used by Chain.Dial.
-func SrcAddrChainOption(addr string) ChainOption {
+func SrcAddrChainOption(addr []string) ChainOption {
 	return func(opts *ChainOptions) {
 		opts.SrcAddr = addr
-		log.Logf("[chain] set src addr: %s", opts.SrcAddr)
 	}
 }

@@ -322,3 +322,17 @@ func parseIPRoutes(s string) (routes []gost.IPRoute) {
 	}
 	return routes
 }
+
+func parseSrcAddr(s string) (srcAddrs []string) {
+	if s == "" {
+		return
+	}
+	ss := strings.Split(s, ",")
+	for _, s := range ss {
+		s = strings.TrimSpace(s)
+		if s != "" {
+			srcAddrs = append(srcAddrs, s)
+		}
+	}
+	return
+}

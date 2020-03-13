@@ -1,6 +1,10 @@
 package gost
 
-import "net"
+import (
+	"net"
+	
+	"github.com/libp2p/go-reuseport"
+)
 
 // tcpTransporter is a raw TCP transporter.
 type tcpTransporter struct{}
@@ -24,19 +28,27 @@ func (tr *tcpTransporter) Dial(addr string, options ...DialOption) (net.Conn, er
 	if timeout <= 0 {
 		timeout = DialTimeout
 	}
-	var laddr *net.TCPAddr
-	if len(opts.SrcAddr) > 0 {
-		var err error
-		laddr, err = net.ResolveTCPAddr("tcp", opts.SrcAddr)
+	
+	d := net.Dialer{
+		Timeout: timeout,
+		Control: reuseport.Control,
+	}
+	if len(opts.SrcAddr) == 0 {
+		return d.Dial("tcp", addr)
+	}
+	var conn net.Conn
+	var err error
+	for _, srcAddr := range opts.SrcAddr {
+		d.LocalAddr, err = net.ResolveTCPAddr("tcp", srcAddr)
 		if err != nil {
-			return nil, err
+			continue
+		}
+		conn, err = d.Dial("tcp", addr)
+		if err == nil {
+			break
 		}
 	}
-	dialer := net.Dialer{
-		Timeout:   timeout,
-		LocalAddr: laddr,
-	}
-	return dialer.Dial("tcp", addr)
+	return conn, err
 }
 
 func (tr *tcpTransporter) Handshake(conn net.Conn, options ...HandshakeOption) (net.Conn, error) {

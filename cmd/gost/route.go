@@ -136,6 +136,7 @@ func parseChainNode(ns string) (nodes []gost.Node, err error) {
 	wsOpts.Path = node.Get("path")
 
 	timeout := node.GetDuration("timeout")
+	srcAddr := parseSrcAddr(node.Get("src"))
 
 	var tr gost.Transporter
 	switch node.Transport {
@@ -236,7 +237,7 @@ func parseChainNode(ns string) (nodes []gost.Node, err error) {
 
 	node.DialOptions = append(node.DialOptions,
 		gost.TimeoutDialOption(timeout),
-		gost.SrcAddrDialOption(node.Get("src")),
+		gost.SrcAddrDialOption(srcAddr),
 	)
 
 	node.ConnectOptions = []gost.ConnectOption{
@@ -583,6 +584,7 @@ func (r *route) GenRouters() ([]router, error) {
 		node.Bypass = parseBypass(node.Get("bypass"))
 		hosts := parseHosts(node.Get("hosts"))
 		ips := parseIP(node.Get("ip"), "")
+		srcAddr := parseSrcAddr(node.Get("src"))
 
 		resolver := parseResolver(node.Get("dns"))
 		if resolver != nil {
@@ -595,6 +597,7 @@ func (r *route) GenRouters() ([]router, error) {
 			)
 		}
 
+		log.Logf("src: %s", node.Get("src"))
 		handler.Init(
 			gost.AddrHandlerOption(ln.Addr().String()),
 			gost.ChainHandlerOption(chain),
@@ -617,7 +620,7 @@ func (r *route) GenRouters() ([]router, error) {
 			gost.IPsHandlerOption(ips),
 			gost.TCPModeHandlerOption(node.GetBool("tcp")),
 			gost.IPRoutesHandlerOption(tunRoutes...),
-			gost.SrcAddrHandlerOption(node.Get("src")),
+			gost.SrcAddrHandlerOption(srcAddr),
 		)
 
 		rt := router{
